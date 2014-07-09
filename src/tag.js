@@ -3,7 +3,8 @@
  * @ignore
  */
 
-var BUI = require('bui-common'),
+var $ = require('jquery'),
+  BUI = require('bui-common'),
   List = require('bui-list'),
   KeyCode = BUI.KeyCode,
   WARN = 'warn';

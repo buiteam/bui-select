@@ -4,7 +4,8 @@
  */
 
 'use strict';
-var BUI = require('bui-common'),
+var $ = require('jquery'),
+  BUI = require('bui-common'),
   Combox = require('./combox'),
   TIMER_DELAY = 200,
   EMPTY = '';

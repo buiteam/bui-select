@@ -4,7 +4,8 @@
  */
 
 
-var BUI = require('bui-common'),
+var $ = require('jquery'),
+  BUI = require('bui-common'),
   Select = require('./select'),
   Tag = require('./tag'),
   CLS_INPUT = BUI.prefix + 'combox-input';
