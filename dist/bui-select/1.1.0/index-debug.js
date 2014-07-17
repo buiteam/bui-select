@@ -1,4 +1,4 @@
-define("bui-select/1.1.0/index-debug", ["jquery/1.9.1/jquery-debug", "bui-common/1.1.0/common-debug", "bui-select/1.1.0/src/select-debug", "bui-select/1.1.0/src/combox-debug", "bui-select/1.1.0/src/suggest-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug", "bui-select/1.1.0/src/tag-debug"], function(require, exports, module) {
+define("bui-select/1.1.0/index-debug", ["jquery", "bui-common/1.1.0/common-debug", "bui-select/1.1.0/src/select-debug", "bui-select/1.1.0/src/combox-debug", "bui-select/1.1.0/src/suggest-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug", "bui-select/1.1.0/src/tag-debug"], function(require, exports, module) {
   /**
    * @fileOverview 选择框命名空间入口文件
    * @ignore
@@ -12,14 +12,14 @@ define("bui-select/1.1.0/index-debug", ["jquery/1.9.1/jquery-debug", "bui-common
   });
   module.exports = Select;
 });
-define("bui-select/1.1.0/src/select-debug", ["jquery/1.9.1/jquery-debug", "bui-common/1.1.0/common-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug"], function(require, exports, module) {
+define("bui-select/1.1.0/src/select-debug", ["jquery", "bui-common/1.1.0/common-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug"], function(require, exports, module) {
   /**
    * @fileOverview 选择控件
    * @author dxq613@gmail.com
    * @ignore
    */
   'use strict';
-  var $ = require("jquery/1.9.1/jquery-debug"),
+  var $ = require("jquery"),
     BUI = require("bui-common/1.1.0/common-debug"),
     ListPicker = require("bui-picker/1.1.0/index-debug").ListPicker,
     PREFIX = BUI.prefix;
@@ -468,12 +468,12 @@ define("bui-select/1.1.0/src/select-debug", ["jquery/1.9.1/jquery-debug", "bui-c
     });
   module.exports = select;
 });
-define("bui-select/1.1.0/src/combox-debug", ["jquery/1.9.1/jquery-debug", "bui-common/1.1.0/common-debug", "bui-select/1.1.0/src/select-debug", "bui-select/1.1.0/src/tag-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug"], function(require, exports, module) {
+define("bui-select/1.1.0/src/combox-debug", ["jquery", "bui-common/1.1.0/common-debug", "bui-select/1.1.0/src/select-debug", "bui-select/1.1.0/src/tag-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug"], function(require, exports, module) {
   /**
    * @fileOverview 组合框可用于选择输入文本
    * @ignore
    */
-  var $ = require("jquery/1.9.1/jquery-debug"),
+  var $ = require("jquery"),
     BUI = require("bui-common/1.1.0/common-debug"),
     Select = require("bui-select/1.1.0/src/select-debug"),
     Tag = require("bui-select/1.1.0/src/tag-debug"),
@@ -572,13 +572,13 @@ define("bui-select/1.1.0/src/combox-debug", ["jquery/1.9.1/jquery-debug", "bui-c
   });
   module.exports = combox;
 });
-define("bui-select/1.1.0/src/suggest-debug", ["jquery/1.9.1/jquery-debug", "bui-common/1.1.0/common-debug", "bui-select/1.1.0/src/combox-debug", "bui-select/1.1.0/src/select-debug", "bui-select/1.1.0/src/tag-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug"], function(require, exports, module) {
+define("bui-select/1.1.0/src/suggest-debug", ["jquery", "bui-common/1.1.0/common-debug", "bui-select/1.1.0/src/combox-debug", "bui-select/1.1.0/src/select-debug", "bui-select/1.1.0/src/tag-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug", "bui-overlay/1.1.0/index-debug", "bui-picker/1.1.0/index-debug"], function(require, exports, module) {
   /**
    * @fileOverview 组合框可用于选择输入文本
    * @ignore
    */
   'use strict';
-  var $ = require("jquery/1.9.1/jquery-debug"),
+  var $ = require("jquery"),
     BUI = require("bui-common/1.1.0/common-debug"),
     Combox = require("bui-select/1.1.0/src/combox-debug"),
     TIMER_DELAY = 200,
@@ -898,12 +898,12 @@ define("bui-select/1.1.0/src/suggest-debug", ["jquery/1.9.1/jquery-debug", "bui-
   });
   module.exports = suggest;
 });
-define("bui-select/1.1.0/src/tag-debug", ["jquery/1.9.1/jquery-debug", "bui-common/1.1.0/common-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug"], function(require, exports, module) {
+define("bui-select/1.1.0/src/tag-debug", ["jquery", "bui-common/1.1.0/common-debug", "bui-data/1.1.0/index-debug", "bui-list/1.1.0/index-debug"], function(require, exports, module) {
   /**
    * @fileOverview 输入、选择完毕后显示tag
    * @ignore
    */
-  var $ = require("jquery/1.9.1/jquery-debug"),
+  var $ = require("jquery"),
     BUI = require("bui-common/1.1.0/common-debug"),
     List = require("bui-list/1.1.0/index-debug"),
     KeyCode = BUI.KeyCode,
