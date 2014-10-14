@@ -84,10 +84,11 @@ var suggest = Combox.extend({
 
     //3种加载方式选择
     var cacheable = _self.get('cacheable'),
+      store = _self.get('store'),
       url = _self.get('url'),
       data = _self.get('data');
 
-    if (cacheable && url) {
+    if (cacheable && (url || store)) {
       var dataCache = _self.get('dataCache');
       if (dataCache[text] !== undefined) {
         //从缓存读取
@@ -98,7 +99,7 @@ var suggest = Combox.extend({
         //BUI.log('no cache, data from server');
         _self._requestData();
       }
-    }else if (url) {
+    }else if (url || store) {
       //从服务器获取数据
       //BUI.log('no cache, data always from server');
       _self._requestData();

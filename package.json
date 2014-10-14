@@ -19,7 +19,8 @@
       "jquery": "1.9.1",
       "bui-common": "1.1.0",
       "bui-picker": "1.1.0",
-      "bui-list": "1.1.0"
+      "bui-list": "1.1.0",
+      "bui-dpl" : "1.1.0"
     },
     "devDependencies": {
       "expect.js": "0.3.1",
@@ -29,6 +30,6 @@
       "seajs": "2.2.1"
     },
     "buildArgs": "--ignore jquery",
-    "tests": "tests/*.js"
+    "tests": "tests/tag-spec.js"
   }
 }

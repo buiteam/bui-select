@@ -9,6 +9,15 @@ var $ = require('jquery'),
   KeyCode = BUI.KeyCode,
   WARN = 'warn';
 
+function html_decode(str)   
+{   
+  var s = "";   
+  if (str.length == 0) return "";   
+  s = str.replace(/>/g, "&gt;");   
+  s = s.replace(/</g, "&lt;");   
+  return s;   
+}    
+
 /**
  * @class BUI.Select.Tag
  * 显示tag的扩展
@@ -30,7 +39,7 @@ Tag.ATTRS = {
    * @type {String}
    */
   tagItemTpl : {
-    value : '<li>{value}<button>×</button></li>'
+    value : '<li>{text}<button>×</button></li>'
   },
   /**
    * @private
@@ -40,8 +49,17 @@ Tag.ATTRS = {
   tagList : {
     value : null
   },
+  limit : {
+    value : null
+  },
+  forbitInput : {
+    value : false
+  },
   tagPlaceholder : {
     value : '输入标签'
+  },
+  tagFormatter : {
+    value : null
   },
   /**
    * 默认的value分隔符，将值分割显示成tag
@@ -87,14 +105,37 @@ BUI.augment(Tag,{
         }
       });
 
-      tagInput.on('change',function(ev){
-        setTimeout(function(){
-          var val = tagInput.val();
-          if(val){
-            _self._addTag(val);
-          }
-        });
+      var handler;
+      function setTag(){
+        var tagList =  _self.get('tagList'),
+          last = tagList.getLastItem();
+        if(last && tagList.hasStatus(last,WARN)){ //如果最后一项处于警告状态
+          tagList.setItemStatus(last,WARN,false);
+        }
+
+        var val = tagInput.val();
+        if(val){
+          _self._addTag(val);
+        }
         
+      }
+      if(!_self.get('forbitInput')){
+        tagInput.on('change',function(){
+          handler = setTimeout(function(){
+            setTag();
+            handler = null;
+          },50);
+        });
+      }
+      
+
+      _self.on('change',function(ev){
+        setTimeout(function(){
+          if(handler){
+            clearTimeout(handler);
+          }
+          setTag();
+        });
       });
     }
   },
@@ -108,29 +149,45 @@ BUI.augment(Tag,{
   },
   //设置tags，初始化时处理
   _setTags : function(value){
+    
     var _self = this,
       tagList = _self.get('tagList'),
       separator = _self.get('separator'),
+      formatter = _self.get('tagFormatter'),
       values = value.split(separator);
     if(!tagList){
       tagList = _self._initTagList();
     }
     if(value){
       BUI.each(values,function(val){
-        tagList.addItem({value : val});
+        var text = val;
+        if(formatter){
+          text = formatter(text);
+        }
+        tagList.addItem({value : val,text : text});
       });
     }
-    
-
   },
   //添加tag
   _addTag : function(value){
+    value = html_decode(value);
     var _self = this,
       tagList = _self.get('tagList'),
       tagInput = _self.getTagInput(),
+      limit = _self.get('limit'),
+      formatter = _self.get('tagFormatter'),
       preItem = tagList.getItem(value);
+    if(limit){
+      if(tagList.getItemCount() >= limit){
+        return;
+      }
+    }
     if(!preItem){
-      tagList.addItem({value : value});
+      var text = value;
+      if(formatter){
+        text = formatter(text);
+      }
+      tagList.addItem({value : value,text : text});
       _self._synTagsValue();
     }else{
       _self._blurItem(tagList,preItem);

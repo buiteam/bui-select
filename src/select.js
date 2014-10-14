@@ -66,17 +66,21 @@ var Component = BUI.Component,
       var _self = this,
         multipleSelect = _self.get('multipleSelect'),
         xclass,
-        picker = _self.get('picker');
+        picker = _self.get('picker'),
+        list;
       if(!picker){
         xclass = multipleSelect ? 'listbox' : 'simple-list';
+        list = _self.get('list') || {};
+        list = BUI.mix(list,{
+          xclass : xclass,
+          elCls:PREFIX + 'select-list',
+          store : _self.get('store'),
+          items : formatItems(_self.get('items'))/**/
+        });
+
         picker = new Picker({
           children:[
-            {
-              xclass : xclass,
-              elCls:PREFIX + 'select-list',
-              store : _self.get('store'),
-              items : formatItems(_self.get('items'))/**/
-            }
+            list
           ],
           valueField : _self.get('valueField')
         });
@@ -101,7 +105,6 @@ var Component = BUI.Component,
       picker.set('triggerEvent', _self.get('triggerEvent'));
       picker.set('autoSetValue', _self.get('autoSetValue'));
       picker.set('textField',textEl);
-
       picker.render();
       _self.set('list',picker.get('list'));
     },
@@ -114,11 +117,16 @@ var Component = BUI.Component,
         
       //选项发生改变时
       picker.on('selectedchange',function(ev){
-        _self.fire('change',{text : ev.text,value : ev.value,item : ev.item});
+        if(ev.item){
+          _self.fire('change',{text : ev.text,value : ev.value,item : ev.item});
+        }
       });
-      list.on('itemsshow',function(){
-        _self._syncValue();
-      });
+      if(_self.get('autoSetValue')){
+        list.on('itemsshow',function(){
+          _self._syncValue();
+        });
+      }
+      
       picker.on('show',function(){
         if(_self.get('forceFit')){
           picker.set('width',_self.get('el').outerWidth());
