@@ -84,7 +84,8 @@ define("bui-select/1.1.0/src/select-debug", ["jquery", "bui-common/1.1.0/common-
         var _self = this,
           multipleSelect = _self.get('multipleSelect'),
           xclass,
-          picker = _self.get('picker');
+          picker = _self.get('picker'),
+          list;
         if (!picker) {
           xclass = multipleSelect ? 'listbox' : 'simple-list';
           list = _self.get('list') || {};
@@ -130,15 +131,19 @@ define("bui-select/1.1.0/src/select-debug", ["jquery", "bui-common/1.1.0/common-
           store = list.get('store');
         //选项发生改变时
         picker.on('selectedchange', function(ev) {
-          _self.fire('change', {
-            text: ev.text,
-            value: ev.value,
-            item: ev.item
+          if (ev.item) {
+            _self.fire('change', {
+              text: ev.text,
+              value: ev.value,
+              item: ev.item
+            });
+          }
+        });
+        if (_self.get('autoSetValue')) {
+          list.on('itemsshow', function() {
+            _self._syncValue();
           });
-        });
-        list.on('itemsshow', function() {
-          _self._syncValue();
-        });
+        }
         picker.on('show', function() {
           if (_self.get('forceFit')) {
             picker.set('width', _self.get('el').outerWidth());
@@ -586,10 +591,18 @@ define("bui-select/1.1.0/src/tag-debug", ["jquery", "bui-common/1.1.0/common-deb
     List = require("bui-list/1.1.0/index-debug"),
     KeyCode = BUI.KeyCode,
     WARN = 'warn';
-  /**
-   * @class BUI.Select.Tag
-   * 显示tag的扩展
-   */
+
+  function html_decode(str) {
+      var s = "";
+      if (str.length == 0) return "";
+      s = str.replace(/>/g, "&gt;");
+      s = s.replace(/</g, "&lt;");
+      return s;
+    }
+    /**
+     * @class BUI.Select.Tag
+     * 显示tag的扩展
+     */
   var Tag = function() {};
   Tag.ATTRS = {
     /**
@@ -604,7 +617,7 @@ define("bui-select/1.1.0/src/tag-debug", ["jquery", "bui-common/1.1.0/common-deb
      * @type {String}
      */
     tagItemTpl: {
-      value: '<li>{value}<button>×</button></li>'
+      value: '<li>{text}<button>×</button></li>'
     },
     /**
      * @private
@@ -617,8 +630,14 @@ define("bui-select/1.1.0/src/tag-debug", ["jquery", "bui-common/1.1.0/common-deb
     limit: {
       value: null
     },
+    forbitInput: {
+      value: false
+    },
     tagPlaceholder: {
       value: '输入标签'
+    },
+    tagFormatter: {
+      value: null
     },
     /**
      * 默认的value分隔符，将值分割显示成tag
@@ -661,12 +680,33 @@ define("bui-select/1.1.0/src/tag-debug", ["jquery", "bui-common/1.1.0/common-deb
             }
           }
         });
-        tagInput.on('change', function(ev) {
+        var handler;
+
+        function setTag() {
+          var tagList = _self.get('tagList'),
+            last = tagList.getLastItem();
+          if (last && tagList.hasStatus(last, WARN)) { //如果最后一项处于警告状态
+            tagList.setItemStatus(last, WARN, false);
+          }
+          var val = tagInput.val();
+          if (val) {
+            _self._addTag(val);
+          }
+        }
+        if (!_self.get('forbitInput')) {
+          tagInput.on('change', function() {
+            handler = setTimeout(function() {
+              setTag();
+              handler = null;
+            }, 50);
+          });
+        }
+        _self.on('change', function(ev) {
           setTimeout(function() {
-            var val = tagInput.val();
-            if (val) {
-              _self._addTag(val);
+            if (handler) {
+              clearTimeout(handler);
             }
+            setTag();
           });
         });
       }
@@ -684,24 +724,32 @@ define("bui-select/1.1.0/src/tag-debug", ["jquery", "bui-common/1.1.0/common-deb
       var _self = this,
         tagList = _self.get('tagList'),
         separator = _self.get('separator'),
+        formatter = _self.get('tagFormatter'),
         values = value.split(separator);
       if (!tagList) {
         tagList = _self._initTagList();
       }
       if (value) {
         BUI.each(values, function(val) {
+          var text = val;
+          if (formatter) {
+            text = formatter(text);
+          }
           tagList.addItem({
-            value: val
+            value: val,
+            text: text
           });
         });
       }
     },
     //添加tag
     _addTag: function(value) {
+      value = html_decode(value);
       var _self = this,
         tagList = _self.get('tagList'),
         tagInput = _self.getTagInput(),
         limit = _self.get('limit'),
+        formatter = _self.get('tagFormatter'),
         preItem = tagList.getItem(value);
       if (limit) {
         if (tagList.getItemCount() >= limit) {
@@ -709,8 +757,13 @@ define("bui-select/1.1.0/src/tag-debug", ["jquery", "bui-common/1.1.0/common-deb
         }
       }
       if (!preItem) {
+        var text = value;
+        if (formatter) {
+          text = formatter(text);
+        }
         tagList.addItem({
-          value: value
+          value: value,
+          text: text
         });
         _self._synTagsValue();
       } else {
@@ -869,9 +922,10 @@ define("bui-select/1.1.0/src/suggest-debug", ["jquery", "bui-common/1.1.0/common
       }
       //3种加载方式选择
       var cacheable = _self.get('cacheable'),
+        store = _self.get('store'),
         url = _self.get('url'),
         data = _self.get('data');
-      if (cacheable && url) {
+      if (cacheable && (url || store)) {
         var dataCache = _self.get('dataCache');
         if (dataCache[text] !== undefined) {
           //从缓存读取
@@ -882,7 +936,7 @@ define("bui-select/1.1.0/src/suggest-debug", ["jquery", "bui-common/1.1.0/common
           //BUI.log('no cache, data from server');
           _self._requestData();
         }
-      } else if (url) {
+      } else if (url || store) {
         //从服务器获取数据
         //BUI.log('no cache, data always from server');
         _self._requestData();
