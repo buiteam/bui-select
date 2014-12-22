@@ -2,7 +2,6 @@ var $ = require('jquery'),
   expect = require('expect.js'),
   sinon = require('sinon'),
   Data = require('bui-data'),
-  Grid = require('bui-grid'),
   Picker = require('bui-picker'),
   Select = require('../index');
 
